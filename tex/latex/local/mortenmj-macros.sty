@@ -1,0 +1,33 @@
+\RequirePackage{bm}
+\RequirePackage{catchfilebetweentags}
+\RequirePackage{copyrightbox}
+\RequirePackage{graphicx}
+\ProvidesPackage{mortenmj-macros}
+
+\newcommand{\cimage}[2]{%
+    \centering
+    \copyrightbox[r]{%
+	{\includegraphics[width=0.8\textwidth, height=0.6\textheight, keepaspectratio]{#1}}%
+	{#2}%
+    }%
+}
+
+\makeatletter
+\let\org@subfile\subfile
+\renewcommand*{\subfile}[1]{%
+  \filename@parse{#1}% LaTeX's file name parser
+  \expandafter
+  \graphicspath\expandafter{\expandafter{\filename@area}}%
+  \org@subfile{#1}%
+}
+\makeatother
+
+\newcommand{\loadeq}[1]{%
+   \ExecuteMetaData[Equations.tex]{eq#1}%
+}
+
+\renewcommand{\vec}[1]{\bm{#1}}
+\newcommand{\mat}[1]{\bm{#1}}
+
+\endinput
+
