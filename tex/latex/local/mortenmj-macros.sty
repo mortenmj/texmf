@@ -1,9 +1,18 @@
-\RequirePackage{bm}
 \RequirePackage{catchfilebetweentags}
 \RequirePackage{copyrightbox}
 \RequirePackage{graphicx}
+\RequirePackage{subfiles}
+\RequirePackage{bm}
+\RequirePackage{mathrsfs}
+\RequirePackage{svg}
+\RequirePackage{xifthen}
+\RequirePackage{xparse}
+\RequirePackage{xstring}
+\RequirePackage{esvect}
+
 \ProvidesPackage{mortenmj-macros}
 
+% Include image in copyrightbox
 \newcommand{\cimage}[2]{%
     \centering
     \copyrightbox[r]{%
@@ -12,6 +21,17 @@
     }%
 }
 
+
+% Include Inkscape pdf_tex
+\NewDocumentCommand \iimage { O{0.8} m }
+{
+    \centering
+    \tiny
+    \includesvg[width=#1\columnwidth]{#2}
+}
+
+
+% Redefine subfile{} to add path to graphicspath
 \makeatletter
 \let\org@subfile\subfile
 \renewcommand*{\subfile}[1]{%
@@ -22,12 +42,52 @@
 }
 \makeatother
 
-\newcommand{\loadeq}[1]{%
-   \ExecuteMetaData[Equations.tex]{eq#1}%
+% Load equation from file
+\newcommand{\loadeq}[2]{%
+   \ExecuteMetaData[#1]{eq#2}%
 }
 
-\renewcommand{\vec}[1]{\bm{#1}}
-\newcommand{\mat}[1]{\bm{#1}}
+% Overset the function name with the number of dots given by the first argument,
+% or the argument itself if not a number or a number greater than 3.
+\NewDocumentCommand \der { O{1} m } 
+{
+    \IfEqCase{#1}{%
+        {1}{\dot{#2}}%
+        {2}{\ddot{#2}}%
+        {3}{\dddot{#2}}%
+    }[\overset{\mathclap{\scriptscriptstyle\left(#1\right)}}{#2}]
+}
+
+% Type set vector. \vec[derivative number]{function name}{function variable(s)} e.g. \vec[2]{x}{t}
+\RenewDocumentCommand \vec { o m g } {%
+    % Format the function variable.
+    \DeclareDocumentCommand \tmpvec { m }
+    {
+        \bm{##1}%
+    }%
+    %
+    % Add derivative if required.
+    \IfValueTF{#1}{\der[#1]{\tmpvec{#2}}}{\tmpvec{#2}}%
+    \IfNoValueF{#3}{\bm{\left(#3\right)}}
+}
+
+\NewDocumentCommand \mat { m }
+{
+    \bm{#1}
+}
+
+\NewDocumentCommand \laplace { m }
+{
+    \mathscr{L}\left\{#1\right\}
+}
+
+\renewcommand{\mkbegdispquote}[2]{\strut\llap{``}}
+% #1 is closing punctuation, #2 is citation. 
+% We don't use them in this instance, but they
+% need to be "catered for"
+\renewcommand{\mkenddispquote}[2]{#1''\ifblank{#2}{}{#2}}
+% #1 is closing punctuation, #2 is citation.
+% again, we provide for them if needed
 
 \endinput
 
