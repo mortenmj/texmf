@@ -53,7 +53,7 @@
 
 \ProcessOptions\relax
 
-\LoadClass{\baseclass}
+\LoadClass[openany]{\baseclass}
 
 %  Simple interface for the user  to customize the chapter titles 
 \ProvideDocumentCommand{\abovechapterskip}{}{\vspace*{20pt}}
